@@ -25,9 +25,12 @@ const sql = {
     "CUSTOMER_INSERT": process.env.SQL_CUSTOMER_INSERT,
     "CUSTOMER_UPDATE": process.env.SQL_CUSTOMER_UPDATE,
     "CUSTOMER_DELETE": process.env.SQL_CUSTOMER_DELETE,
+    "PET_SELECT_BY_ID": process.env.SQL_PET_SELECT_BY_ID,
     "PET_SELECT_BY_CUSTOMER_ID": process.env.SQL_PET_SELECT_BY_CUSTOMER_ID,
+    "PET_INSERT": process.env.SQL_PET_INSERT,
     "PET_UPDATE": process.env.SQL_PET_UPDATE,
-    "PET_UPDATE_IMG": process.env.SQL_PET_UPDATE_IMG
+    "PET_UPDATE_IMG": process.env.SQL_PET_UPDATE_IMG,
+    "PET_DELETE": process.env.SQL_PET_DELETE,
 }
 
 connection.connect();
@@ -127,6 +130,23 @@ app.post('/api/customers/:id/delete', (req, res) => {
 });
 
 
+//pet情報獲得by pet id
+app.get('/api/pets/:id/', (req, res) => {
+    const petId = req.params.id;
+    try {
+        connection.query(
+            sql.PET_SELECT_BY_ID, [petId],
+            (err, rows, fields) => {
+                res.send(rows);
+            }
+        )
+
+    } catch (e) {
+        res.send(e);
+    }
+});
+
+
 //pet情報獲得by customerId
 app.get('/api/customers/:id/pets/', (req, res) => {
     const customerId = req.params.id;
@@ -142,6 +162,32 @@ app.get('/api/customers/:id/pets/', (req, res) => {
         res.send(e);
     }
 });
+
+
+//ペット登録
+app.post('/api/pets/add', (req, res) => {
+    const formData = req.body.headers.formData;
+    const petName = formData.petName;
+    const petType = formData.petType;
+    const petSex = formData.petSex;
+    const petBirth = formData.petBirth;
+    const petNote = formData.petNote ? formData.petNote : null;
+    const customerId = formData.customerId;
+    const defaultImg = '/upload/hana.png'
+    console.log(formData)
+    try {
+        connection.query(
+            sql.PET_INSERT, [petName, petType, petSex, petBirth, defaultImg, petNote, customerId],
+            (err, rows, fields) => {
+                res.send(rows);
+                return "ok";
+            }
+        )
+    } catch (e) {
+        res.send(e);
+    }
+});
+
 
 //pet情報 Update
 app.post('/api/pets/:id/update/', (req, res) => {
@@ -168,9 +214,23 @@ app.post('/api/pets/:id/update/', (req, res) => {
     }
 });
 
+//ペット登録
+app.post('/api/pets/:id/delete', (req, res) => {
+    const petId = req.params.id;
+    try {
+        connection.query(
+            sql.PET_DELETE, [petId],
+            (err, rows, fields) => {
+                res.send("delete OK");
+            }
+        )
+    } catch (e) {
+        res.send(e);
+    }
+});
+
 
 //img upload
-
 
 const storage = multer.diskStorage({
     destination: "./public/upload/",

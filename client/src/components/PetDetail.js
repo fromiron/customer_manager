@@ -4,9 +4,15 @@ import useAsync from "./useAsync";
 import {Dashboard, Table, TableCell, TableCategory, EmptyPetMsg, TableRow} from "./styles/tableStyle"
 import Pet from "./Pet";
 import petDefaultImg from '../images/hana.png'
+import styled from "styled-components";
+
+const PetDetailWrapper = styled.div`
+padding: 0 10%;
+`
+
 
 function PetDetail(props) {
-    //get customer
+
     const [state, refetch] = useAsync(getPet, []);
     const {loading, data: pets, error} = state;
     const customerId = props.customerId;
@@ -24,9 +30,8 @@ function PetDetail(props) {
         return response.data;
     }
 
-    console.log(pets)
     return (
-        <Dashboard>
+        <PetDetailWrapper>
 
 
             <Table>
@@ -48,7 +53,7 @@ function PetDetail(props) {
 
                 {pets.map(p => (
                     <Pet key={'pet' + p.petId} petId={p.petId}
-                         petImg={p.petImg ? `http://localhost:5000${p.petImg}` : petDefaultImg}
+                         petImg={p.petImg ? p.petImg : petDefaultImg}
                          petName={p.petName}
                          petType={p.petType}
                          petSex={p.petSex === 0 ? "オス" : p.petSex === 1 ? "メス" : "不明"}
@@ -60,7 +65,8 @@ function PetDetail(props) {
                 ))}
 
             </Table>
-        </Dashboard>
+
+        </PetDetailWrapper>
 
     )
 }

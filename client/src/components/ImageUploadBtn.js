@@ -26,7 +26,7 @@ border-radius: 20px;
 const InnerWrapper = styled.div`
 width: 400px;
 `
-const ImageUploadBtnWrapper=styled.div`
+const ImageUploadBtnWrapper = styled.div`
 display: flex;
 justify-content: center;
 margin-bottom: 30px;
@@ -65,15 +65,6 @@ function ImageUploadBtn(props) {
     return (
         <ImageUploadBtnWrapper>
             <form onSubmit={onSubmit}>
-                {uploadedImg ? (
-                    <InnerWrapper>
-                        <UploadedImg src={uploadedImg.filePath} alt=""/>
-                        <h3>{uploadedImg.fileName}</h3>
-                        <h3>{uploadedImg.filePath}</h3>
-                    </InnerWrapper>
-                ) : (
-                    ''
-                )}
                 <input type="file" onChange={onChange}/>
                 <button type="submit">Upload</button>
             </form>

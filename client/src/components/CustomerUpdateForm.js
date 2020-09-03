@@ -132,7 +132,7 @@ function CustomerUpdateForm(props) {
                             ref={register({
                                 required: "電話番号を入力してください。",
                                 pattern: {
-                                    value: /^\d{2,3}-\d{3,4}-\d{4}$/,
+                                    value:  /^\d{2,5}-\d{2,4}-\d{3,4}$/,
                                     message: "正しい電話番号を入力してください。"
                                 }
                             })}

@@ -3,7 +3,8 @@ import axios from "axios";
 import useAsync from "./useAsync";
 import PetDetail from "./PetDetail";
 import CustomerUpdateForm from "./CustomerUpdateForm";
-
+import ButtonAnimation from "./styles/ButtonAnimation";
+import PetCreate from './PetCreate';
 
 function CustomerDetail(props) {
     //get customer
@@ -23,6 +24,7 @@ function CustomerDetail(props) {
         }
         return response.data;
     }
+
 
     return (
         <div>
@@ -47,6 +49,8 @@ function CustomerDetail(props) {
             </div>
 
             <PetDetail customerId={customerId}/>
+
+            <PetCreate customerId={customerId}/>
         </div>
 
     )

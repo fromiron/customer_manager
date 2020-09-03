@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import colors from "./colors";
 
+
 export const DeleteLockBtn = styled.button`
 padding: 5px;
 width: 95px;
@@ -100,3 +101,12 @@ max-width:300px;
 margin-left: 40px;
 margin-bottom: 20px;
 `;
+
+
+export const AlignCenter = styled.div`
+display: flex;
+justify-content: center;
+`;
+export const Divider = styled.div`
+display: flex;
+`
