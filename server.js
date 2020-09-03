@@ -25,6 +25,7 @@ const sql = {
     "CUSTOMER_INSERT": process.env.SQL_CUSTOMER_INSERT,
     "CUSTOMER_UPDATE": process.env.SQL_CUSTOMER_UPDATE,
     "CUSTOMER_DELETE": process.env.SQL_CUSTOMER_DELETE,
+    "CUSTOMER_SEARCH_NAME": process.env.SQL_CUSTOMER_SEARCH_NAME,
     "PET_SELECT_BY_ID": process.env.SQL_PET_SELECT_BY_ID,
     "PET_SELECT_BY_CUSTOMER_ID": process.env.SQL_PET_SELECT_BY_CUSTOMER_ID,
     "PET_INSERT": process.env.SQL_PET_INSERT,
@@ -42,10 +43,23 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.get('/api/customers', (req, res) => {
     connection.query(
         sql.CUSTOMER_SELECT,
-
         (err, rows, fields) => {
             res.send(rows);
 
+        }
+    )
+});
+
+app.get('/api/search/:id', (req, res) => {
+    console.log('search')
+    const name = `%${req.params.id}%`;
+
+    console.log(name)
+    connection.query(
+        sql.CUSTOMER_SEARCH_NAME, [name],
+        (err, rows, fields) => {
+            console.log(rows)
+            res.send(rows);
         }
     )
 });

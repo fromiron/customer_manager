@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import axios from 'axios';
 import Customer from "./Customer";
 import useAsync from './useAsync';
@@ -22,25 +22,52 @@ import {
 import {UpdateBtn} from './styles/objectStyle'
 
 
-
-
-
 const HomeMsg = "いらっしゃい！"
 
-async function getAllCustomer() {
-    const response = await axios.get(
-        'http://localhost:5000/api/customers'
-    );
-    return response.data;
-}
 
 function CustomerList() {
+    const [search, setSearch] = useState(false);
+
+    async function getAllCustomer() {
+        if (search) {
+            let name;
+            name = await document.querySelector(".searchName").value;
+
+            try {
+                const response = await axios.get(
+                    'http://localhost:5000/api/search/' + name
+                )
+                return response.data;
+            } catch (e) {
+                const response = await axios.get(
+                    'http://localhost:5000/api/customers'
+                );
+                setSearch(true);
+                return response.data;
+            }
+        } else {
+            const response = await axios.get(
+                'http://localhost:5000/api/customers'
+            );
+            setSearch(true);
+            return response.data;
+        }
+    }
+
+
     const [state, refetch] = useAsync(getAllCustomer, []);
     const {loading, data: customers, error} = state;
     if (loading) return <div>Loading</div>;
     if (error) return <div>Error</div>;
     if (!customers) return null;
 
+    const handleSearchCount = () => {
+        setSearch(true)
+        getAllCustomer();
+        refetch();
+        setSearch(false)
+
+    }
 
     const handleVisible = () => {
         const form = document.querySelector(".customerForm");
@@ -48,6 +75,16 @@ function CustomerList() {
     }
 
     console.log(HomeMsg)
+
+
+    function SearchBar() {
+        return (
+            <div>
+                <input type="text" className='searchName'/>
+                <button type='button' onClick={handleSearchCount}>検索</button>
+            </div>
+        )
+    };
 
     function CustomerAdd() {
         const {register, watch, handleSubmit, errors} = useForm();
@@ -69,6 +106,7 @@ function CustomerList() {
 
         return (
             <CreateFormWrapper className='customerForm'>
+
                 <FormInnerWrapper>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <FormRow>
@@ -123,7 +161,7 @@ function CustomerList() {
                                 ref={register({
                                     required: "電話番号を入力してください。",
                                     pattern: {
-                                        value:  /^\d{2,5}-\d{2,4}-\d{3,4}$/,
+                                        value: /^\d{2,5}-\d{2,4}-\d{3,4}$/,
                                         message: "正しい電話番号を入力してください。"
                                     }
                                 })}
@@ -155,7 +193,7 @@ function CustomerList() {
 
     return (
         <Dashboard>
-
+            <SearchBar/>
             <Table>
                 <TableCategory>
                     <TableCell className='category alignCenter'>ID</TableCell>
@@ -190,4 +228,5 @@ function CustomerList() {
 }
 
 export default CustomerList;
+
 
