@@ -5,7 +5,10 @@ const app = express();
 const port = process.env.PORT || 5000;
 const cors = require('cors');
 const mysql = require('mysql');
+const multer = require("multer");
+const path = require("path");
 require('dotenv').config();
+
 
 const connection = mysql.createConnection({
     host: process.env.DATABASE_HOST,
@@ -23,6 +26,8 @@ const sql = {
     "CUSTOMER_UPDATE": process.env.SQL_CUSTOMER_UPDATE,
     "CUSTOMER_DELETE": process.env.SQL_CUSTOMER_DELETE,
     "PET_SELECT_BY_CUSTOMER_ID": process.env.SQL_PET_SELECT_BY_CUSTOMER_ID,
+    "PET_UPDATE": process.env.SQL_PET_UPDATE,
+    "PET_UPDATE_IMG": process.env.SQL_PET_UPDATE_IMG
 }
 
 connection.connect();
@@ -83,23 +88,6 @@ app.get('/api/customers/:id', (req, res) => {
 });
 
 
-//pet情報獲得by customerId
-app.get('/api/customers/:id/pets/', (req, res) => {
-    const customerId = req.params.id;
-    try {
-        connection.query(
-            sql.PET_SELECT_BY_CUSTOMER_ID, [customerId],
-            (err, rows, fields) => {
-                res.send(rows);
-            }
-        )
-
-    } catch (e) {
-        res.send(e);
-    }
-});
-
-
 app.post('/api/customers/:id/update', (req, res) => {
     const customerId = req.params.id;
     const formData = req.body.headers.formData;
@@ -110,7 +98,6 @@ app.post('/api/customers/:id/update', (req, res) => {
     const email = formData.email;
     const tel = formData.tel;
     const note = formData.note ? formData.note : null;
-    const id = formData.note ? formData.note : null;
 
     try {
         connection.query(
@@ -138,6 +125,87 @@ app.post('/api/customers/:id/delete', (req, res) => {
         res.send(e);
     }
 });
+
+
+//pet情報獲得by customerId
+app.get('/api/customers/:id/pets/', (req, res) => {
+    const customerId = req.params.id;
+    try {
+        connection.query(
+            sql.PET_SELECT_BY_CUSTOMER_ID, [customerId],
+            (err, rows, fields) => {
+                res.send(rows);
+            }
+        )
+
+    } catch (e) {
+        res.send(e);
+    }
+});
+
+//pet情報 Update
+app.post('/api/pets/:id/update/', (req, res) => {
+    const petId = req.params.id;
+    const formData = req.body.headers.formData;
+    const petName = formData.petName;
+    const petType = formData.petType;
+    const petSex = formData.petSex;
+    const petBirth = formData.petBirth;
+    const petNote = formData.petNote ? formData.petNote : null;
+
+
+    try {
+        connection.query(
+            sql.PET_UPDATE, [petName, petType, petSex, petBirth, petNote, petId],
+            (err, rows, fields) => {
+                res.send(rows);
+                console.log(rows)
+            }
+        )
+
+    } catch (e) {
+        res.send(e);
+    }
+});
+
+
+//img upload
+
+
+const storage = multer.diskStorage({
+    destination: "./public/upload/",
+    filename: function (req, file, cb) {
+        cb(null, "pet" + Date.now() + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: {fileSize: 4000000}
+});
+
+app.use(express.static('public'));
+
+app.post("/upload", upload.single("img"), function (req, res, next) {
+
+        const petId = req.body.petId;
+        const petImg = `/upload/${req.file.filename}`;
+        try {
+            connection.query(
+                sql.PET_UPDATE_IMG, [petImg, petId],
+                (err, rows, fields) => {
+                    if (err) console.log(err);
+                }
+            );
+            res.send({
+                fileName: req.file.filename
+            });
+        } catch (e) {
+            res.send(e);
+        }
+    }
+);
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 

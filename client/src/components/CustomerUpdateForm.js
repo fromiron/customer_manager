@@ -13,7 +13,8 @@ import {
     InputCheckBox,
     TextArea,
     AlertMsg,
-    InformMsg
+    InformMsg,
+    Option
 } from "./styles/Form";
 
 import {
@@ -143,6 +144,7 @@ function CustomerUpdateForm(props) {
                     <FormRow>
                         <FormLabel htmlFor="moreDetail">More</FormLabel>
                         <InputCheckBox name="moreDetail" type="checkbox" ref={register}/>
+                        <Option>追加オプション</Option>
                     </FormRow>
 
 

@@ -1,10 +1,6 @@
 import styled from "styled-components";
 import colors from "./colors";
 
-
-
-
-
 export const DeleteLockBtn = styled.button`
 padding: 5px;
 width: 95px;
@@ -89,3 +85,18 @@ width: 250px;
 }
 `
 ;
+
+export const PetProfile = styled.img`
+width: auto;
+height:80px;
+border-radius: 20px;
+margin-top:5px;
+`
+;
+export const PetProfileBig = styled.img`
+border-radius: 20px;
+height:200px;
+max-width:300px;
+margin-left: 40px;
+margin-bottom: 20px;
+`;

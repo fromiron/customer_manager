@@ -1,10 +1,9 @@
 import React from "react";
 import axios from "axios";
 import useAsync from "./useAsync";
-import TableBody from "@material-ui/core/TableBody";
+import {Dashboard, Table, TableCell, TableCategory, EmptyPetMsg, TableRow} from "./styles/tableStyle"
 import Pet from "./Pet";
-import Table from "@material-ui/core/Table";
-
+import petDefaultImg from '../images/hana.png'
 
 function PetDetail(props) {
     //get customer
@@ -25,12 +24,31 @@ function PetDetail(props) {
         return response.data;
     }
 
+    console.log(pets)
     return (
-        <Table>
+        <Dashboard>
 
-            <TableBody>
+
+            <Table>
+                <TableCategory>
+                    <TableCell className='alignCenter'>ID</TableCell>
+                    <TableCell className='alignCenter'>IMAGE</TableCell>
+                    <TableCell className='alignCenter'>NAME</TableCell>
+                    <TableCell className='alignCenter'>TYPE</TableCell>
+                    <TableCell className='alignCenter'>SEX</TableCell>
+                    <TableCell className='alignCenter'>BIRTH</TableCell>
+                    <TableCell className='alignCenter'>NOTE</TableCell>
+                    <TableCell className='alignCenter'>CREATED</TableCell>
+
+                </TableCategory>
+                {pets.length === 0 ? <TableRow>
+                    <EmptyPetMsg colSpan='8'>登録されたペット情報がありません。</EmptyPetMsg>
+
+                </TableRow> : null}
+
                 {pets.map(p => (
                     <Pet key={'pet' + p.petId} petId={p.petId}
+                         petImg={p.petImg ? `http://localhost:5000${p.petImg}` : petDefaultImg}
                          petName={p.petName}
                          petType={p.petType}
                          petSex={p.petSex === 0 ? "オス" : p.petSex === 1 ? "メス" : "不明"}
@@ -41,9 +59,8 @@ function PetDetail(props) {
 
                 ))}
 
-            </TableBody>
-        </Table>
-
+            </Table>
+        </Dashboard>
 
     )
 }
