@@ -38,13 +38,13 @@ function useAsync(callback, deps = []) {
             const data = await callback();
             dispatch({type: 'SUCCESS', data});
         } catch (e) {
+            console.log(e);
             dispatch({type: 'ERROR', error: e});
         }
     };
 
     useEffect(() => {
         fetchData();
-        // eslint-disable-next-line
     }, deps);
 
     return [state, fetchData];

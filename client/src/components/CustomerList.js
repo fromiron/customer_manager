@@ -1,11 +1,10 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import axios from 'axios';
 import Customer from "./Customer";
 import useAsync from './useAsync';
 import {useForm} from "react-hook-form";
 import Axios from "axios";
 import {Dashboard, Table, TableCategory, TableCell} from "./styles/tableStyle"
-import styled from "styled-components";
 import ButtonAnimation from "./styles/ButtonAnimation";
 import {
     CreateFormWrapper,
@@ -17,43 +16,25 @@ import {
     InputCheckBox,
     TextArea,
     AlertMsg,
-    Option
+    Option,
+    SearchBarWrapper,
+    SearchBarInput,
+    SearchBarButton
 } from "./styles/Form";
-import {UpdateBtn} from './styles/objectStyle'
-
-
-const HomeMsg = "いらっしゃい！"
+import {UpdateBtn, PageBtn} from './styles/objectStyle'
+import {API_SERVER} from './dotEnv'
 
 
 function CustomerList() {
-    const [search, setSearch] = useState(false);
 
-    async function getAllCustomer() {
-        if (search) {
-            let name;
-            name = await document.querySelector(".searchName").value;
+    const [page, setPage] = useState(1);
+    const [name, setName] = useState(null);
+    const [maxPage, setMaxPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
 
-            try {
-                const response = await axios.get(
-                    'http://localhost:5000/api/search/' + name
-                )
-                return response.data;
-            } catch (e) {
-                const response = await axios.get(
-                    'http://localhost:5000/api/customers'
-                );
-                setSearch(true);
-                return response.data;
-            }
-        } else {
-            const response = await axios.get(
-                'http://localhost:5000/api/customers'
-            );
-            setSearch(true);
-            return response.data;
-        }
-    }
-
+    useEffect(() => {
+        refetch()
+    }, [page, name, maxPage])
 
     const [state, refetch] = useAsync(getAllCustomer, []);
     const {loading, data: customers, error} = state;
@@ -61,28 +42,89 @@ function CustomerList() {
     if (error) return <div>Error</div>;
     if (!customers) return null;
 
-    const handleSearchCount = () => {
-        setSearch(true)
-        getAllCustomer();
-        refetch();
-        setSearch(false)
+    async function getAllCustomer() {
+        const viewCount = 10;
+
+        if (page === 1 && name === null) {
+            try {
+                const response = await axios.get(
+                    API_SERVER + '/customers/count'
+                )
+                let totalCustomer = response.data[0]['COUNT(id)']
+                let pages = Math.ceil(totalCustomer / viewCount);
+                setMaxPage(pages)
+
+            } catch (e) {
+                console.log(e)
+            }
+            const response = await axios.get(
+                API_SERVER + '/page/' + page
+            );
+
+            return response.data;
+        }
+
+
+        if (name !== null) {
+            const response = await axios.get(
+                API_SERVER + '/search/' + name)
+            let len = response.data.length;
+            let pages = Math.ceil(len / viewCount);
+            setMaxPage(pages)
+            return response.data;
+        }
+
+        if (page) {
+            setCurrentPage(page)
+            const response = await axios.get(
+                API_SERVER + '/page/' + page
+            );
+            return response.data;
+        }
 
     }
+
+
+    function Pagination() {
+        let pages = [], i = 0;//データーがない場合の為三項演算;
+        while (++i <= maxPage) pages.push(i);
+
+        return (
+            <div align={'center'}>
+                {pages.map(pageNum => (
+                    <PageBtn onClick={
+                        () => {
+                            setPage(pageNum)
+                            getAllCustomer()
+                        }
+                    } key={pageNum} value={pageNum} clicked={page === pageNum}>{pageNum}</PageBtn>
+                ))}
+            </div>
+        )
+    };
+
 
     const handleVisible = () => {
         const form = document.querySelector(".customerForm");
         form.classList.toggle("visible")
     }
 
-    console.log(HomeMsg)
-
-
     function SearchBar() {
         return (
-            <div>
-                <input type="text" className='searchName'/>
-                <button type='button' onClick={handleSearchCount}>検索</button>
-            </div>
+            <SearchBarWrapper>
+                <div>
+                    <SearchBarInput type="text" className='searchName'/>
+                    <SearchBarButton type='button' onClick={() => {
+                        const nameValue = document.querySelector(".searchName").value;
+                        if (nameValue === '') {
+                            return
+                        } else {
+                            setName(nameValue)
+                            getAllCustomer();
+                        }
+                    }}>検索</SearchBarButton>
+                </div>
+            </SearchBarWrapper>
         )
     };
 
@@ -90,7 +132,7 @@ function CustomerList() {
         const {register, watch, handleSubmit, errors} = useForm();
         const onSubmit = data => {
 
-            Axios.post(`http://localhost:5000/api/customers/add`, {
+            Axios.post(API_SERVER + '/customers/add', {
                 headers: {
                     'Content-type': 'application/x-www-form-urlencoded',
                     formData: data
@@ -111,7 +153,8 @@ function CustomerList() {
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <FormRow>
                             <FormLabel htmlFor="name">NAME</FormLabel>
-                            <InputText name="name" ref={register({required: true, maxLength: 20})} placeholder="名前"/>
+                            <InputText name="name" ref={register({required: true, maxLength: 20})}
+                                       placeholder="名前"/>
                             {errors.name && errors.name.type === "required" && <AlertMsg>名前を入力してください。</AlertMsg>}
                         </FormRow>
                         <FormRow>
@@ -128,13 +171,16 @@ function CustomerList() {
                                 <option value="2">Attack Helicopter</option>
                                 <option value="3">その他</option>
                             </InputSelect>
-                            {errors.gender && errors.gender.type === "required" && <AlertMsg>性別を選択してください。</AlertMsg>}
+                            {errors.gender && errors.gender.type === "required" &&
+                            <AlertMsg>性別を選択してください。</AlertMsg>}
 
                         </FormRow>
                         <FormRow>
                             <FormLabel htmlFor="address">ADDRESS</FormLabel>
-                            <InputText name="address" ref={register({required: true, maxLength: 50})} placeholder="住所"/>
-                            {errors.address && errors.address.type === "required" && <AlertMsg>住所を入力してください。</AlertMsg>}
+                            <InputText name="address" ref={register({required: true, maxLength: 50})}
+                                       placeholder="住所"/>
+                            {errors.address && errors.address.type === "required" &&
+                            <AlertMsg>住所を入力してください。</AlertMsg>}
 
                         </FormRow>
                         <FormRow>
@@ -193,8 +239,14 @@ function CustomerList() {
 
     return (
         <Dashboard>
+
+
             <SearchBar/>
+            <ButtonAnimation text={"顧客登録"} handleClick={handleVisible}/>
+
+            <CustomerAdd/>
             <Table>
+                <tbody>
                 <TableCategory>
                     <TableCell className='category alignCenter'>ID</TableCell>
                     <TableCell className='category alignCenter'>Name</TableCell>
@@ -203,6 +255,7 @@ function CustomerList() {
                     <TableCell className='category alignCenter'>Tel</TableCell>
                     <TableCell className='category alignCenter'>More</TableCell>
                 </TableCategory>
+
 
                 {customers.map(c => (
                     <Customer key={c.id} id={c.id}
@@ -216,12 +269,10 @@ function CustomerList() {
                               created={c.created}
                     />
                 ))}
+                </tbody>
             </Table>
-
-            <CustomerAdd/>
-
-            <ButtonAnimation text={"顧客登録"} handleClick={handleVisible}/>
-
+            {customers.length === 0 ? <div>お客さまの情報がありません。</div> : null}
+            <Pagination/>
         </Dashboard>
 
     );

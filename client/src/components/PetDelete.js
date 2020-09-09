@@ -2,11 +2,9 @@ import React, {useState} from "react";
 import {
     DeleteBtn,
     DeleteLockBtn,
-    UpdateBtn,
-    BackBtn
 } from './styles/objectStyle'
 import Axios from "axios";
-
+import {API_SERVER} from './dotEnv'
 
 function PetDelete(props) {
     const petId = props.petId;
@@ -23,7 +21,7 @@ function PetDelete(props) {
             setMsg('削除できません。')
             return
         }
-        Axios.post('http://localhost:5000/api/pets/' + petId + '/delete', {
+        Axios.post(API_SERVER + '/pets/' + petId + '/delete', {
             headers: {
                 'Content-type': 'application/x-www-form-urlencoded',
                 formData: data

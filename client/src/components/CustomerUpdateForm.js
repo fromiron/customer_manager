@@ -23,6 +23,7 @@ import {
     UpdateBtn,
     BackBtn
 } from './styles/objectStyle'
+import {API_SERVER} from './dotEnv'
 
 function CustomerUpdateForm(props) {
     let history = useHistory();
@@ -32,17 +33,14 @@ function CustomerUpdateForm(props) {
     const [Del, setDel] = useState(false);
 
     const onSubmit = data => {
-        console.log(data)
-        Axios.post('http://localhost:5000/api/customers/' + props.id + '/update', {
+        Axios.post(API_SERVER+'/customers/' + props.id + '/update', {
             headers: {
                 'Content-type': 'application/x-www-form-urlencoded',
                 formData: data
             }
         }).then(response => {
-            console.log(response.data)
             setMsg("更新済");
         }).catch(error => {
-            console.log('failed', error)
             setMsg(error);
         }).finally()
     };
@@ -58,14 +56,13 @@ function CustomerUpdateForm(props) {
             setMsg('削除できません。')
             return
         }
-        Axios.post('http://localhost:5000/api/customers/' + props.id + '/delete', {
+        Axios.post(API_SERVER+'/customers/' + props.id + '/delete', {
             headers: {
                 'Content-type': 'application/x-www-form-urlencoded',
                 formData: data
             }
         }).then(response => {
             history.push('/')
-            console.log(response.data);
         }).catch(error => {
             console.log('failed', error);
             setMsg(error);

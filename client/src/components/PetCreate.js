@@ -1,12 +1,8 @@
 import React, {useState} from "react";
-import axios from 'axios';
-import Customer from "./Customer";
-import useAsync from './useAsync';
+import Axios from 'axios';
 import {useForm} from "react-hook-form";
-import {PetProfile, PetProfileBig, UpdateBtn, AlignCenter, Divider} from "./styles/objectStyle"
+import {UpdateBtn, Divider} from "./styles/objectStyle"
 import {InformMsg} from '../components/styles/Form'
-import Axios from "axios";
-import {Dashboard, Table, TableCategory, TableCell} from "./styles/tableStyle"
 import styled from "styled-components";
 import ButtonAnimation from "./styles/ButtonAnimation";
 import {
@@ -16,15 +12,16 @@ import {
     InputText,
     InputSelect,
     FormLabel,
-    InputCheckBox,
     TextArea,
-    AlertMsg,
-    Option
+    AlertMsg
 } from "./styles/Form";
+import {API_SERVER} from './dotEnv'
+
 
 const PetCreateWrapper = styled.div`
 padding: 0 10%;
 `
+
 function refreshPage() {
     window.location.reload(false);
 }
@@ -43,7 +40,7 @@ function PetCreate(props) {
         const {register, handleSubmit, errors} = useForm();
         const onSubmit = data => {
 
-            Axios.post(`http://localhost:5000/api/pets/add`, {
+            Axios.post(API_SERVER + '/pets/add', {
                 headers: {
                     'Content-type': 'application/x-www-form-urlencoded',
                     formData: data

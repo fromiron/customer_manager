@@ -20,7 +20,9 @@ const connection = mysql.createConnection({
 });
 
 const sql = {
+    "CUSTOMER_COUNT":process.env.SQL_CUSTOMER_COUNT,
     "CUSTOMER_SELECT": process.env.SQL_CUSTOMER_SELECT,
+    "CUSTOMER_SELECT_LIMIT": process.env.SQL_CUSTOMER_SELECT_LIMIT,
     "CUSTOMER_SELECT_ID": process.env.SQL_CUSTOMER_SELECT_ID,
     "CUSTOMER_INSERT": process.env.SQL_CUSTOMER_INSERT,
     "CUSTOMER_UPDATE": process.env.SQL_CUSTOMER_UPDATE,
@@ -40,25 +42,48 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+
+
+
+
 app.get('/api/customers', (req, res) => {
     connection.query(
         sql.CUSTOMER_SELECT,
         (err, rows, fields) => {
             res.send(rows);
-
         }
     )
 });
 
-app.get('/api/search/:id', (req, res) => {
-    console.log('search')
-    const name = `%${req.params.id}%`;
+app.get('/api/customers/count', (req, res) => {
+    connection.query(
+        sql.CUSTOMER_COUNT,
+        (err, rows, fields) => {
 
-    console.log(name)
+            res.send(rows);
+        }
+    )
+});
+
+
+app.get('/api/search/:id', (req, res) => {
+    const name = `%${req.params.id}%`;
     connection.query(
         sql.CUSTOMER_SEARCH_NAME, [name],
         (err, rows, fields) => {
             console.log(rows)
+            res.send(rows);
+        }
+    )
+});
+
+app.get('/api/page/:id', (req, res) => {
+    const size = 10; //pageに表示情報の数
+    let startIndex = req.params.id ? (req.params.id - 1) * 10 : 0;　//表示するデーターのスタートindex
+    const page = req.params.id;
+    connection.query(
+        sql.CUSTOMER_SELECT_LIMIT, [startIndex, size],
+        (err, rows, fields) => {
             res.send(rows);
         }
     )

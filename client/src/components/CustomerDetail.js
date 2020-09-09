@@ -5,6 +5,7 @@ import PetDetail from "./PetDetail";
 import CustomerUpdateForm from "./CustomerUpdateForm";
 import ButtonAnimation from "./styles/ButtonAnimation";
 import PetCreate from './PetCreate';
+import {API_SERVER} from './dotEnv'
 
 function CustomerDetail(props) {
     //get customer
@@ -17,7 +18,7 @@ function CustomerDetail(props) {
 
     async function getCustomer() {
         const response = await axios.get(
-            'http://localhost:5000/api/customers/' + customerId
+            API_SERVER + '/customers/' + customerId
         );
         if (response.data.length === 0) {
             console.log("データーがありません。");

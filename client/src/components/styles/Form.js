@@ -185,3 +185,26 @@ color: ${colors.mainText};
 export const Option = styled.span`
 color : ${colors.formInput};
 `
+export const SearchBarWrapper = styled.div`
+display: flex;
+width: 100%;
+justify-content: center;
+margin-bottom: 20px;
+`
+
+export const SearchBarInput = styled.input`
+border-radius: 4px 0 0 4px; 
+outline: none;
+border: 4px solid ${colors.point};
+padding: 4px 10px;
+`
+export const SearchBarButton = styled.button`
+border-radius: 0 4px 4px 0;
+outline: none;
+border: 4px solid ${colors.point};
+padding: 4px 10px;
+background-color: ${colors.point};
+cursor: pointer;
+color: ${colors.white};
+font-weight: 500;
+`

@@ -110,3 +110,18 @@ justify-content: center;
 export const Divider = styled.div`
 display: flex;
 `
+
+export const PageBtn = styled.button`
+cursor: pointer;
+outline: none;
+border: none;
+border-radius: 5px;
+margin: 0 4px;
+color: ${colors.mainText};
+background-color:${props => props.clicked === true ? colors.lightGray : colors.white}; 
+color:${props => props.clicked === true ? colors.white : colors.mainText}; 
+transition: all 0.1s ease-in-out;
+&:hover{
+background-color: ${colors.point};
+}
+`

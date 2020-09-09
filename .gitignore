@@ -7,8 +7,11 @@
 
 /public/upload
 /upload
+
+/client/src/.env
 .idea
 .env
+
 /client/.gitignore
 /client/package-lock.json
 /client/node_modules

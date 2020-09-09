@@ -1,21 +1,8 @@
-import {useHistory} from "react-router";
-import {useForm} from "react-hook-form";
 import React, {useState} from "react";
 import Axios from "axios";
 import styled from "styled-components";
-import {ChangePetRow, MoreBtn, TableCell, TableRow} from "./styles/tableStyle";
-import {PetProfile, PetProfileBig, UpdateBtn} from "./styles/objectStyle";
-import {FontAwesomeIcon as FAIcon} from "@fortawesome/react-fontawesome";
-import {faCog} from "@fortawesome/free-solid-svg-icons";
-import {
-    AlertMsg,
-    FormLabel,
-    FormRow, InformMsg,
-    InputSelect,
-    InputText,
-    PetFormInnerWrapper,
-    PetUpdateFormWrapper, TextArea
-} from "./styles/Form";
+
+import {UPLOAD,SERVER} from './dotEnv'
 
 
 const UploadedImg = styled.img`
@@ -32,7 +19,7 @@ justify-content: center;
 margin-bottom: 30px;
 `
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = SERVER;
 
 function ImageUploadBtn(props) {
     const [uploadedImg, setUploadedImg] = useState({
@@ -49,11 +36,11 @@ function ImageUploadBtn(props) {
         const formData = new FormData();
         formData.append("img", content);
         formData.append("petId", props.petId);
-        Axios.post("http://localhost:5000/upload", formData)
+        Axios.post(UPLOAD, formData)
             .then(res => {
                 const {fileName} = res.data;
                 console.log(fileName);
-                setUploadedImg({fileName, filePath: `${BASE_URL}/upload/${fileName}`});
+                setUploadedImg({fileName, filePath: `${BASE_URL}${fileName}`});
                 alert("成功");
             })
             .catch(err => {

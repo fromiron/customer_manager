@@ -1,10 +1,11 @@
 import React from "react";
 import axios from "axios";
 import useAsync from "./useAsync";
-import {Dashboard, Table, TableCell, TableCategory, EmptyPetMsg, TableRow} from "./styles/tableStyle"
+import {Table, TableCell, TableCategory, EmptyPetMsg, TableRow} from "./styles/tableStyle"
 import Pet from "./Pet";
 import petDefaultImg from '../images/hana.png'
 import styled from "styled-components";
+import {API_SERVER} from './dotEnv'
 
 const PetDetailWrapper = styled.div`
 padding: 0 10%;
@@ -22,10 +23,9 @@ function PetDetail(props) {
 
     async function getPet() {
         const response = await axios.get(
-            'http://localhost:5000/api/customers/' + customerId + '/pets/'
+            API_SERVER + '/customers/' + customerId + '/pets/'
         );
         if (response.data.length === 0) {
-            console.log("データーがありません。");
         }
         return response.data;
     }
@@ -63,7 +63,6 @@ function PetDetail(props) {
                     />
 
                 ))}
-
             </Table>
 
         </PetDetailWrapper>

@@ -7,6 +7,7 @@ const ButtonContainer = styled.div`
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  outline: none;
 
 `;
 
@@ -28,6 +29,9 @@ text-align: center;
   letter-spacing: 10px;
   font-weight: 700;
 box-shadow: 1px 2px 3px 1px rgba(0,0,0,0.2);
+  &:focus{
+  outline: none;
+  }
 
   &:hover{
   color: ${colors.white};}
